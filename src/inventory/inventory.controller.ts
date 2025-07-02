@@ -5,6 +5,9 @@ import { InventoryService } from './inventory.service';
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
+  // TODO: Implement PATCH method to update item quantity
+  // TODO: Add DTO input validation
+
   @Post()
   addItem(@Body() body: { id: string; name: string; quantity: number }) {
     return this.inventoryService.addItem(body);
