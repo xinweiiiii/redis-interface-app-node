@@ -8,11 +8,17 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     private readonly inventoryKey = 'inventory';
 
     async onModuleInit() {
-        this.client = createClient()
+        this.client = createClient({
+            socket: {
+                host: process.env.REDIS_HOST || 'localhost',
+                port: parseInt(process.env.REDIS_PORT || '6379', 10),
+            },
+            password: process.env.REDIS_PASSWORD || undefined,
+            });       
         this.client.on('error', (err) => console.error('Redis Client Error', err));
         await this.client.connect();
     }
-
+    
     async onModuleDestroy() {
         await this.client.quit();
     }
