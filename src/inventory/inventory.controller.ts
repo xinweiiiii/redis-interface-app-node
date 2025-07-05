@@ -38,9 +38,13 @@ export class InventoryController {
 	@Patch(':id/quantity')
 	async incrementQuantity(
 			@Param('id') id: string,
-			@Body() body: { amount: number }
+			@Body() body: { quantity: number }
 	) {
-			const { amount } = body;
-			return this.inventoryService.incrementItemQuantity(id, amount);
+			const { quantity } = body;
+			this.inventoryService.incrementItemQuantity(id, quantity);
+			return {
+				id,
+				quantity
+			};
 	}
 }
