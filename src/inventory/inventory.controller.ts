@@ -1,5 +1,7 @@
 import { Controller, Post, Get, Delete, Patch, Param, Body } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
+import { nanoid } from 'nanoid'
+import { InventoryItem } from './inventory.dto';
 
 @Controller('inventory')
 export class InventoryController {
@@ -9,8 +11,13 @@ export class InventoryController {
   // TODO: Add DTO input validation
 
   @Post()
-  addItem(@Body() body: { id: string; name: string; quantity: number }) {
-    return this.inventoryService.addItem(body);
+  addItem(@Body() body: { name: string; quantity: number }) {
+    const item: InventoryItem = {
+        ...body,
+        id: nanoid()
+    }
+    this.inventoryService.addItem(item);
+    return item
   }
 
   @Get(':id')
