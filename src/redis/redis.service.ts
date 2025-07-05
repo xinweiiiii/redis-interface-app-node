@@ -4,6 +4,8 @@ import { InventoryItem } from "src/inventory/inventory.dto";
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
+    // TODO: Add method to generate metrics on redis response time
+
     private client: RedisClientType
     private readonly inventoryKey = 'inventory';
 
@@ -18,7 +20,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         this.client.on('error', (err) => console.error('Redis Client Error', err));
         await this.client.connect();
     }
-    
+
     async onModuleDestroy() {
         await this.client.quit();
     }
@@ -40,5 +42,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
     async deleteInventoryItem(id: string): Promise<void> {
         await this.client.hDel(this.inventoryKey, id);
+    }
+
+    async incrementItemQuantity(id: string, amount: number) {
+        const newQuantity = await this.client.hIncrBy(this.inventoryKey, 'quantity', amount);
+        return { id, newQuantity };
     }
 }

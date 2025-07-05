@@ -21,4 +21,8 @@ export class InventoryService {
     async deleteItem(id: string): Promise<void> {
         await this.redisService.deleteInventoryItem(id);
     }
+
+    async incrementItemQuantity(id: string, amount: number): Promise<void> {
+        await this.redisService.incrementItemQuantity(id, amount);
+    }
 }

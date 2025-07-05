@@ -34,4 +34,13 @@ export class InventoryController {
   delete(@Param('id') id: string) {
     return this.inventoryService.deleteItem(id);
   }
+
+	@Patch(':id/quantity')
+	async incrementQuantity(
+			@Param('id') id: string,
+			@Body() body: { amount: number }
+	) {
+			const { amount } = body;
+			return this.inventoryService.incrementItemQuantity(id, amount);
+	}
 }
