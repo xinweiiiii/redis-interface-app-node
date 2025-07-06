@@ -10,7 +10,7 @@ export class InventoryController {
   // TODO: Implement PATCH method to update item quantity
   // TODO: Add DTO input validation
 
-  @Post()
+ v
   addItem(@Body() body: { name: string; quantity: number }) {
     const item: InventoryItem = {
         ...body,

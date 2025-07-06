@@ -26,7 +26,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
 
     async saveSession(session: SESSION, ttlSeconds = 3600): Promise<void> {
-        await this.client.set(`${this.sessionKey}:${session.sessionid}`, JSON.stringify(session), { EX: ttlSeconds });
+        await this.client.set(`${this.sessionKey}:${session.sessionId}`, JSON.stringify(session), { EX: ttlSeconds });
     }
 
     async getSession(sessionid: string): Promise<SESSION | null> {
@@ -44,7 +44,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         return updatedSession;
     }
 
-    async deleteeSession(sessionid: string): Promise<void> {
+    async deleteSession(sessionid: string): Promise<void> {
         await this.client.del(`${this.sessionKey}:${sessionid}`);
     }
     
