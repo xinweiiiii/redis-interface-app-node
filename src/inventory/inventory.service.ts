@@ -1,4 +1,4 @@
-import { RedisService } from '../redis/redis.service';
+import { RedisService } from '../redis/redis.inventory.service';
 import { InventoryItem } from "../inventory/inventory.dto";
 import { Injectable } from '@nestjs/common';
 

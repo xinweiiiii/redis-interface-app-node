@@ -48,4 +48,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         const newQuantity = await this.client.hIncrBy(this.inventoryKey, 'quantity', amount);
         return { id, newQuantity };
     }
+
+    
 }
