@@ -25,7 +25,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         await this.client.quit();
     }
 
-    // Invesitory Specific Redis Helpers
+    // Inventory Specific Redis Helpers
     async saveInventoryItem(item: InventoryItem): Promise<void> {
         await this.client.hSet(this.inventoryKey, item.id, JSON.stringify(item));
     }
