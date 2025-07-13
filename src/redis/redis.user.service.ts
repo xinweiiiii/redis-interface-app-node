@@ -6,7 +6,8 @@ import { User } from "src/user/user.dto";
 export class RedisService implements OnModuleInit, OnModuleDestroy {
 
     private client: RedisClientType
-    private readonly inventoryKey = 'user';
+    private readonly userKey = 'user';
+    private readonly signupSessionCacheKey = 'signupSessionCache';
 
     async onModuleInit() {
         this.client = createClient({
@@ -25,7 +26,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
 
     async saveUser(user: User): Promise<void> {
-        await this.client.hSet(this.inventoryKey, user.id, JSON.stringify(user));
+        await this.client.hSet(this.userKey, user.id, JSON.stringify(user));
         // Adding a secondary index for username
         await this.client.set(`username:${user.username}`, user.id);
     }
@@ -40,8 +41,14 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         if (!userId) {
             return null;
         }
-        const user = await this.client.hGet(this.inventoryKey, userId);
+        const user = await this.client.hGet(this.userKey, userId);
         return user ? JSON.parse(user) : null;
+    }
+
+    async setTemporaryUserDataIntoCache(username: string, passwordHash: string): Promise<void> {
+        const tempUser = { username, passwordHash };
+        await this.client.hSet(`signup:${this.signupSessionCacheKey}:${username}`, username, JSON.stringify(tempUser));
+        await this.client.expire(`signup:${this.signupSessionCacheKey}:${username}`, 300); // TTL 5 mins
     }
 
 }
