@@ -31,6 +31,14 @@ export class UserService {
         return this.redisService.setTemporaryUserDataIntoCache(username, passwordHash);
     }
 
+    async getTemporaryUserDataFromCache(username: string): Promise<string | null> {
+        return this.redisService.getTemporaryUserDataFromCache(username);
+    }
+
+    async clearTemporaryUserDataFromCache(username: string): Promise<void> {
+        return this.redisService.clearTemporaryUserDataFromCache(username);
+    }
+
     async validateCredentials(username: string, password: string): Promise<User | null> {
         const user = await this.findUser(username);
         if (!user) return null;
@@ -38,5 +46,5 @@ export class UserService {
         const match = await bcrypt.compare(password, user.passwordHash);
         return match ? user : null;
     }
-    
+
 }

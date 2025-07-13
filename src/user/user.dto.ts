@@ -1,4 +1,4 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsString, Length, MinLength } from 'class-validator';
 
 export interface User {
   id: string;
@@ -13,4 +13,13 @@ export class SignupDto {
   @IsString()
   @MinLength(6)
   password: string;
+}
+
+export class VerifySignupDto {
+  @IsString()
+  username: string;
+
+  @IsString()
+  @Length(6,6)
+  otp: string;
 }

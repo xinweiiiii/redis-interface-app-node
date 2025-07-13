@@ -51,4 +51,12 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         await this.client.expire(`signup:${this.signupSessionCacheKey}:${username}`, 300); // TTL 5 mins
     }
 
+    async getTemporaryUserDataFromCache(username: string): Promise<string | null> {
+        const tempUser = await this.client.hGet(`signup:${this.signupSessionCacheKey}:${username}`, username);
+        return tempUser ? JSON.parse(tempUser).passwordHash : null;
+    }
+
+    async clearTemporaryUserDataFromCache(username: string): Promise<void> {
+        await this.client.del(`signup:${this.signupSessionCacheKey}:${username}`);
+    }
 }
