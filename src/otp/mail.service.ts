@@ -20,7 +20,7 @@ export class MailService {
     async sendOtpEmail(to: string, otp: string): Promise<void> {
         const msg = {
         to,
-        from: this.senderEmail, // Verified sender in SendGrid
+        from: this.senderEmail,
         subject: 'Your OTP Code',
         text: `Your OTP code is: ${otp}`,
         html: `<p>Your OTP code is: <strong>${otp}</strong></p>`,

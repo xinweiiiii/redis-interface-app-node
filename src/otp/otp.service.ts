@@ -26,5 +26,5 @@ export class OtpService {
         }
 
         return false;
-    }
+    } 
 }

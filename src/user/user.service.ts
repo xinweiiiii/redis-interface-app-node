@@ -39,12 +39,12 @@ export class UserService {
         return this.redisService.clearTemporaryUserDataFromCache(username);
     }
 
-    async validateCredentials(username: string, password: string): Promise<User | null> {
+    async validateCredentials(username: string, password: string): Promise<User | undefined> {
         const user = await this.findUser(username);
-        if (!user) return null;
+        if (!user) return undefined;
 
         const match = await bcrypt.compare(password, user.passwordHash);
-        return match ? user : null;
+        return match ? user : undefined;
     }
 
 }
