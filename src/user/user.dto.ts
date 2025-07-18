@@ -22,4 +22,8 @@ export class VerifySignupDto {
   @IsString()
   @Length(6,6)
   otp: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
 }

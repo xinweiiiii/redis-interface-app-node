@@ -29,7 +29,7 @@ export class UserController {
         const passwordHash = await bcrypt.hash(body.password, 10);
 
         // 3. Create temporary user session and save to Redis
-        await this.userService.setTemporaryUserDataIntoCache(body.username, passwordHash;           
+        await this.userService.setTemporaryUserDataIntoCache(body.username, passwordHash);           
         
         // 4. Generate and send OTP
         const otp = await this.otpService.generateOtp(body.username);
@@ -37,42 +37,34 @@ export class UserController {
         return { message: 'OTP sent. Verify to complete signup.' };
     }   
 
-    @Post('verify-password')
-    async verifyPassword(@Body() body: VerifySignupDto): Promise<{ message: string, userId: string }> {
-        // 1. Retrieve temporary user data from Redis
-        const passwordHash = await this.userService.getTemporaryUserDataFromCache(body.username);
-        if (!passwordHash) {
+    @Post('verify')
+    async verifySignup(@Body() body: VerifySignupDto): Promise<{ message: string; userId: string }> {
+        const { username, otp, password } = body;
+
+        // 1. Retrieve temporary hashed password from Redis
+        const cachedPasswordHash = await this.userService.getTemporaryUserDataFromCache(username);
+        if (!cachedPasswordHash) {
             throw new BadRequestException('Temporary user data not found');
         }
 
         // 2. Validate Password
-        const user = await this.userService.validateCredentials(body.username, passwordHash);
-
-        if (!user) {
+        const isPasswordValid = await bcrypt.compare(password, cachedPasswordHash);
+        if (!isPasswordValid) {
             throw new BadRequestException('Invalid password');
-        }   
+        }
 
-        return { message: 'Succesful password verification', userId: user.id };
-    }
-
-    @Post('verify-otp')
-    async verifyOtp(@Body() body: VerifySignupDto): Promise<{ message: string }> {
-        // 1. Validate OTP
-        const isValidOtp = await this.otpService.verifyOtp(body.username, body.otp);
+        // 3. Validate OTP
+        const isValidOtp = await this.otpService.verifyOtp(username, otp);
         if (!isValidOtp) {
             throw new BadRequestException('Invalid OTP');
         }
 
-        // 2. Create user in the database
-        const passwordHash = await this.userService.getTemporaryUserDataFromCache(body.username);
-        if (!passwordHash) {
-            throw new BadRequestException('Temporary user data not found');
-        }
-        await this.userService.createUser(body.username, passwordHash);
+        // 4. Create user
+        const user = await this.userService.createUser(username, cachedPasswordHash);
 
-        // 3. Clear temporary data from Redis
-        await this.userService.clearTemporaryUserDataFromCache(body.username);
+        // 5. Clear temporary data
+        await this.userService.clearTemporaryUserDataFromCache(username);
 
-        return { message: 'OTP verified and user created successfully' };
-    }   
+        return { message: 'User created successfully', userId: user.id };
+    } 
 }
