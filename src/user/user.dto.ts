@@ -15,6 +15,15 @@ export class SignupDto {
   password: string;
 }
 
+export class LoginDto {
+  @IsString()
+  username: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
+}
+
 export class VerifySignupDto {
   @IsString()
   username: string;

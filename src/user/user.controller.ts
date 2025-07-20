@@ -1,11 +1,12 @@
 import { BadRequestException, Body, Controller, Post } from "@nestjs/common";
-import { SignupDto, User, VerifySignupDto } from "./user.dto";
+import { LoginDto, SignupDto, User, VerifySignupDto } from "./user.dto";
 import { UserService } from "./user.service";
 import * as bcrypt from 'bcrypt';
 import { Verify } from "crypto";
 import { OtpService } from "src/otp/otp.service";
 import { MailService } from "src/otp/mail.service";
 import { userInfo } from "os";
+import { AuthService } from "src/auth/auth.service";
 
 
 @Controller('user')
@@ -13,7 +14,8 @@ export class UserController {
     constructor(
         private readonly userService: UserService,
         private readonly otpService: OtpService,
-        private readonly mailService: MailService
+        private readonly mailService: MailService,
+        private readonly authService: AuthService,
     ) {}
 
     @Post('signup')
@@ -67,4 +69,17 @@ export class UserController {
 
         return { message: 'User created successfully', userId: user.id };
     } 
+
+    @Post('login')
+    async login(@Body() body: LoginDto): Promise<{ access_token: string }> {
+        const { username, password } = body;
+
+        // 1. Validate user credentials
+        const user = await this.userService.validateCredentials(username, password);
+        if (!user) {
+            throw new BadRequestException('Invalid username or password');
+        }
+
+        return this.authService.login(user.username, user.id);
+    }
 }
